@@ -8,4 +8,6 @@ public class NibssConstants {
     public static final BigDecimal FEE_CAP = new BigDecimal("100");
 
     public static final BigDecimal COMMISSION_PERCENTAGE = new BigDecimal("0.2");
+
+    public static final String PENDING = "PENDING";
 }

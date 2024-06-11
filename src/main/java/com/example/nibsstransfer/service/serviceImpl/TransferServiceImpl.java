@@ -50,18 +50,18 @@ public class TransferServiceImpl implements TransferService {
           duplicate before saving first
         */
         TransactionEntity transaction;
-//        Start by verifying that the sender account and beneficiary account are both valid. Normally, this would be done by an API call,
+//        Start by verifying that the sender account is valid. Normally, this would be done by an API call,
 //        but we can mock it by calling accounts already existing in a database
 
         AccountEntity senderAccount = accountRepository.findByAccountNumberAndAccountName(
                 requestDto.getSender().getSenderAccountNumber(), requestDto.getSender().getSenderName());
         log.info("Sender account details {}", senderAccount);
 
-        if(senderAccount == null){
-            log.warn("Account details were not found. This transaction cannot be processed {}", requestDto);
+        if(senderAccount == null || senderAccount.getBvn() == null || !senderAccount.getAccountNumber().equals(requestDto.getSender().getSenderAccountNumber())){
+            log.warn("sender account details are not valid. This transaction cannot be processed {}", requestDto);
             return TransferConvert.convertToPaymentResponseModel(requestDto);
         }
-        //save every transaction that comes into the system
+        //save every transaction that comes into the system once account has been validated
         transaction = transferRepository.save(TransferConvert.convertToEntity(requestDto, senderAccount));
 
         try {
