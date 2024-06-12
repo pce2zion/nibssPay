@@ -39,12 +39,14 @@ public class ScheduleJob {
                 transactionEntity.setIsCommissionWorthy(true);
                 transactionEntity.setCommission(COMMISSION_PERCENTAGE.multiply(transactionEntity.getTransactionFee()));
 
+                //here the commission is subtracted from the transaction fee and the transaction fee amount is updated.
+                transactionEntity.setTransactionFee(transactionEntity.getTransactionFee().subtract(transactionEntity.getCommission()));
                 transferRepository.save(transactionEntity);
             }
         }
     }
 
-    @Scheduled(cron = "0 0 2 * * ?") //runs daily at 2:00 AM
+    @Scheduled(cron = "0 0 0 * * ?") //runs daily at 12:00 AM
     public void getDailySummary(){
         Date today = NibssUtils.getStartOfDay(new Date());
           transferService.getDailySummary(today);

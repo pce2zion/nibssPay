@@ -1,0 +1,47 @@
+{
+	"info": {
+		"_postman_id": "23231257-19f2-4fd8-bd94-afd29b3d8e56",
+		"name": "NibssClientCall",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "24661316"
+	},
+	"item": [
+		{
+			"name": "doTransfer",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "MQP0A4wtJcVgjn/6r2T9VjmyMA+bC34FubfLNswHgjZKIVNGKN/l9SyDm5Ff6jBBMwHGZ2uts1xW+v8f2+RE2m1/5Ufq5j126iMGCnARUeSCJ1ZSSZPdgaz7pFXxrBZKAhxTlkqdb8wz+Th6uG9EXADt/yFlBSnkhPg6qmKC2fXmlmxDoEcKTzuVOateanQHYx6+WD3mJlTRQ0eiqz66g5L0rMXIna+1s5PukJUR3YXa1fJXtkExF0sGaKnqjsxozUPorkpWJmmdEQQ9XDvth2GfReRJn+uXLblXEbzLdJMB9kLGCUY0+pYnBhBT6BKHkoxQvrK9Y9YLWZ7AzlRAfA=="
+				},
+				"url": "{{url}}/doTransfer"
+			},
+			"response": [
+				{
+					"name": "Default",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "MQP0A4wtJcVgjn/6r2T9VjmyMA+bC34FubfLNswHgjZKIVNGKN/l9SyDm5Ff6jBBMwHGZ2uts1xW+v8f2+RE2m1/5Ufq5j126iMGCnARUeSCJ1ZSSZPdgaz7pFXxrBZKAhxTlkqdb8wz+Th6uG9EXADt/yFlBSnkhPg6qmKC2fXmlmxDoEcKTzuVOateanQHYx6+WD3mJlTRQ0eiqz66g5L0rMXIna+1s5PukJUR3YXa1fJXtkExF0sGaKnqjsxozUPorkpWJmmdEQQ9XDvth2GfReRJn+uXLblXEbzLdJMB9kLGCUY0+pYnBhBT6BKHkoxQvrK9Y9YLWZ7AzlRAfA=="
+						},
+						"url": "https://ea388149-c762-42f2-94be-7ea764de8b7e.mock.pstmn.io/doTransfer"
+					},
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": null,
+					"cookie": [],
+					"body": "{\"status\":\"success\"}"
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "url",
+			"value": "https://ea388149-c762-42f2-94be-7ea764de8b7e.mock.pstmn.io"
+		}
+	]
+}

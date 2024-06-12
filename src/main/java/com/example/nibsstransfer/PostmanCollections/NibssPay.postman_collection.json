@@ -1,0 +1,104 @@
+{
+	"info": {
+		"_postman_id": "a13b0e6c-e8fa-44c1-8e5f-63b0c19ef292",
+		"name": "NibssPay",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "24661316"
+	},
+	"item": [
+		{
+			"name": "Transfer",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"amount\": 50.00,\n    \"sender\": {\n        \"senderAccountName\": \"John Doe\",\n        \"senderAccountNumber\": \"ACC12345\"\n    },\n    \"beneficiary\":{\n         \"beneficiaryAccountName\": \"Jane Smith\",\n         \"beneficiaryAccountNumber\": \"ACC123480\"\n    },\n    \"otherDetailsRequest\": {\n        \"description\": \"Spa treatment\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:8081/nibss/doTransfer"
+			},
+			"response": []
+		},
+		{
+			"name": "GatTransactionsWithOptionalParameters",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/nibss/getTranscations?status=success&accountId=ACC12345&startDate=2024-06-10 &endDate=2024-06-10 ",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"nibss",
+						"getTranscations"
+					],
+					"query": [
+						{
+							"key": "status",
+							"value": "success"
+						},
+						{
+							"key": "accountId",
+							"value": "ACC12345"
+						},
+						{
+							"key": "startDate",
+							"value": "2024-06-10 "
+						},
+						{
+							"key": "endDate",
+							"value": "2024-06-10 "
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetDailySummary",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8081/nibss/dailySummary?date=2024-06-10",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"nibss",
+						"dailySummary"
+					],
+					"query": [
+						{
+							"key": "date",
+							"value": "2024-06-10"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

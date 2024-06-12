@@ -15,6 +15,7 @@ import com.example.nibsstransfer.dto.responseDto.PaymentResponseModel;
 import com.example.nibsstransfer.entity.AccountEntity;
 import com.example.nibsstransfer.entity.TransactionEntity;
 import com.example.nibsstransfer.util.NibssUtils;
+import com.example.nibsstransfer.util.RSAEncrypt;
 import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
@@ -296,7 +297,9 @@ public class TransferConvert {
         req.setSenderAccountName(transaction.getSenderAccountName());
         req.setSenderAccountNumber(transaction.getSenderAccountNumber());
 
-        return JSON.toJSONString(req);
+        String stringReq= JSON.toJSONString(req);
+        RSAEncrypt.encrypt(stringReq);
+        return stringReq;
     }
 
     public static TransferClientResponse buildTransactionClientResponse(TransactionEntity entity, TransferClientResponse res) {
