@@ -15,7 +15,7 @@ Account name : Dave Black
 Account number : ACC12350
 Account balance : N100.00 this is to test for insufficient funds
 
-you can also test for unknown account numbers
+you can also test for invalid account numbers
 
 Once the sender account details aprovided are valid, the transaction is saved into the database to be processed with a status of PENDING. If the balance is less than the amount to send, 
 the transaction fails and INSUFFICIENT FUNDS is returned as the status, else, the transaction fee is calculated, the transaction is encrypted using RSA encryption and send to the beneficiary institution. Here, i built a mock server to accept all transaction requests. This returns a response if successful.
