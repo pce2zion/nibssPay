@@ -15,6 +15,10 @@ Account name : Dave Black
 Account number : ACC12350
 Account balance : N100.00 this is to test for insufficient funds
 
+Account name : Frank Blue
+Account number : ACC12352
+Account balance : N250000.00 
+
 you can also test for invalid account numbers
 
 Once the sender account details aprovided are valid, the transaction is saved into the database to be processed with a status of PENDING. If the balance is less than the amount to send, 
