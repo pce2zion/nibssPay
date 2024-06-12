@@ -128,6 +128,8 @@ public class TransferConvert {
         model.setTransactionFee(null);
         model.setBilledAmount(null);
         model.setStatus(INSUFFICIENT_FUNDS);
+        model.setCommission(null);
+        model.setTransactionIdFromBeneficiary(null);
 
         return model;
     }
@@ -202,6 +204,8 @@ public class TransferConvert {
             model.setTransactionFee(transaction.getTransactionFee());
             model.setBilledAmount(transaction.getBilledAmount());
             model.setStatus(transaction.getStatus());
+            model.setCommission(transaction.getCommission());
+            model.setTransactionIdFromBeneficiary(transaction.getTransactionIdFromBeneficiary());
 
             responseModelList.add(model);
         }
@@ -258,6 +262,8 @@ public class TransferConvert {
             response.setTransactionFee(model.getTransactionFee());
             response.setBilledAmount(model.getBilledAmount());
             response.setStatus(model.getStatus());
+            response.setTransactionIdFromBeneficiary(model.getTransactionIdFromBeneficiary());
+            response.setCommission(model.getCommission());
 
             responseList.add(response);
         }
@@ -277,7 +283,7 @@ public class TransferConvert {
         return JSON.toJSONString(req);
     }
 
-    public static void buildTransactionClientResponse(TransactionEntity entity, TransferClientResponse res) {
+    public static TransferClientResponse buildTransactionClientResponse(TransactionEntity entity, TransferClientResponse res) {
         res.setTransactionId(NibssUtils.generateRandomNumberString(10));
         res.setAmount(entity.getAmountToSend());
         res.setDate(new Date());
@@ -285,5 +291,7 @@ public class TransferConvert {
         res.getSender().setSenderAccountNumber(entity.getSenderAccountNumber());
         res.getBeneficiary().setBeneficiaryAccountName(entity.getBeneficiaryAccountName());
         res.getBeneficiary().setBeneficiaryAccountNumber(entity.getBeneficiaryAccountNumber());
+
+        return res;
     }
 }

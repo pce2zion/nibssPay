@@ -15,8 +15,10 @@ public interface TransferRepository extends JpaRepository<TransactionEntity, Lon
     List<TransactionEntity> findByGmtCreatedBetween(Date startOfDay, Date endOfDay);
 
     List<TransactionEntity> findByStatusAndSenderAccountNumberAndGmtCreatedBetween(String status, String senderAccountNumber, Date startDate, Date endDate);
+    
+    List<TransactionEntity> findByStatusAndSenderAccountNumber(String senderAccountNumber, Date startDate, Date endDate);
 
-    List<TransactionEntity> findByStatusAndGmtCreatedBetween(String status, Date startDate, Date endDate);
+    List<TransactionEntity> findByStatus(String status, Date startDate, Date endDate);
 
-    List<TransactionEntity> findBySenderAccountNumberAndGmtCreatedBetween(String senderAccountNumber, Date startDate, Date endDate);
+    List<TransactionEntity> findBySenderAccountNumber(String senderAccountNumber, Date startDate, Date endDate);
 }

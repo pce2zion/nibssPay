@@ -115,21 +115,27 @@ public class TransferServiceImpl implements TransferService {
 
         try {
             // Adjust startDate  and endDate to the beginning of the day
-            startDate = NibssUtils.getStartOfDay(startDate);
-            endDate = NibssUtils.getEndOfDay(endDate);
-
+            if(startDate != null && endDate != null) {
+                startDate = NibssUtils.getStartOfDay(startDate);
+                endDate = NibssUtils.getEndOfDay(endDate);
+            }
             //since parameters are optional, perform checks for them differently
-            if (status != null && senderAccountNumber != null) {
+            if (status != null && senderAccountNumber != null && startDate != null & endDate != null) {
                 transactionList = transferRepository.findByStatusAndSenderAccountNumberAndGmtCreatedBetween(status, senderAccountNumber, startDate, endDate);
-            } else if (status != null) {
-                transactionList = transferRepository.findByStatusAndGmtCreatedBetween(status, startDate, endDate);
-            } else if (senderAccountNumber != null) {
-                transactionList = transferRepository.findBySenderAccountNumberAndGmtCreatedBetween(senderAccountNumber, startDate, endDate);
-            } else {
+
+            }else if(status != null & senderAccountNumber != null){
+                transactionList = transferRepository.findByStatusAndSenderAccountNumber(senderAccountNumber, startDate, endDate);
+            }else if (status != null) {
+                transactionList = transferRepository.findByStatus(status, startDate, endDate);
+            }else if (senderAccountNumber != null) {
+                transactionList = transferRepository.findBySenderAccountNumber(senderAccountNumber, startDate, endDate);
+            }else if(startDate != null && endDate != null){
                 transactionList = transferRepository.findByGmtCreatedBetween(startDate, endDate);
             }
+            else{
+                transactionList = transferRepository.findAll();
+            }
             return covertToTransactionsList(responseModelList, transactionList);
-
         }catch(Exception e){
             log.error("Exception occurred while trying to fetch transactions with parameters {} {} {} {}", status,
                     senderAccountNumber, startDate, endDate);

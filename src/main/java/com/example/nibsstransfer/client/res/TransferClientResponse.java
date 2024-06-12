@@ -3,7 +3,6 @@ package com.example.nibsstransfer.client.res;
 import com.alibaba.fastjson.JSONObject;
 import com.example.nibsstransfer.converter.TransferConvert;
 import com.example.nibsstransfer.entity.TransactionEntity;
-import com.example.nibsstransfer.util.NibssUtils;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,7 +29,7 @@ public class TransferClientResponse {
     public static TransferClientResponse build(String responseStr, TransactionEntity entity) {
         try {
            TransferClientResponse res =  JSONObject.parseObject(responseStr, TransferClientResponse.class);
-            TransferConvert.buildTransactionClientResponse(entity, res);
+           return TransferConvert.buildTransactionClientResponse(entity, res);
         } catch (Exception e) {
             log.error("parse from string exception response Str: {}",responseStr, e);
         }
