@@ -124,11 +124,11 @@ public class TransferServiceImpl implements TransferService {
                 endDate = NibssUtils.getEndOfDay(endDate);
             }
             //since parameters are optional, perform checks for them differently
-            if (status != null && senderAccountNumber != null && startDate != null & endDate != null) {
+            if (status != null && senderAccountNumber != null && startDate != null && endDate != null) {
                 transactionList = transferRepository.findByStatusAndSenderAccountNumberAndGmtCreatedBetween(status,
                                                                              senderAccountNumber, startDate, endDate);
 
-            }else if(status != null & senderAccountNumber != null){
+            }else if(status != null && senderAccountNumber != null){
                 transactionList = transferRepository.findByStatusAndSenderAccountNumber(status, senderAccountNumber);
             }else if (status != null) {
                 transactionList = transferRepository.findByStatus(status);
