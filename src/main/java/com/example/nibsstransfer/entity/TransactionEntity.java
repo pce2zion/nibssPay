@@ -40,6 +40,8 @@ public class TransactionEntity {
 
     private String beneficiaryAccountNumber;
 
+    private String transactionIdFromBeneficiary;
+
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date gmtCreated;

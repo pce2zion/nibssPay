@@ -15,7 +15,7 @@ public class PaymentRequest {
     @NotNull(message = "amount should not be null")
     private BigDecimal amount;
 
-    @NotNull(message = "sender details should not be blank")
+    @NotNull(message = "sender details should not be null")
     private SenderRequest sender;
 
     @NotNull(message = "beneficiary should not be null")

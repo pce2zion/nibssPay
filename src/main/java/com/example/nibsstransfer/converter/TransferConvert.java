@@ -1,15 +1,18 @@
 package com.example.nibsstransfer.converter;
 
+import com.alibaba.fastjson.JSON;
+import com.example.nibsstransfer.client.req.TransferClientRequest;
 import com.example.nibsstransfer.client.res.TransferClientResponse;
+import com.example.nibsstransfer.constants.NibssConstants;
+import com.example.nibsstransfer.dto.request.PaymentRequest;
 import com.example.nibsstransfer.dto.requestDto.BeneficiaryRequestDto;
 import com.example.nibsstransfer.dto.requestDto.OtherDetailsDto;
 import com.example.nibsstransfer.dto.requestDto.PaymentRequestDto;
 import com.example.nibsstransfer.dto.requestDto.SenderRequestDto;
+import com.example.nibsstransfer.dto.response.PaymentResponse;
 import com.example.nibsstransfer.dto.responseDto.PaymentResponseModel;
 import com.example.nibsstransfer.entity.AccountEntity;
 import com.example.nibsstransfer.entity.TransactionEntity;
-import com.example.nibsstransfer.dto.request.PaymentRequest;
-import com.example.nibsstransfer.dto.response.PaymentResponse;
 import com.example.nibsstransfer.util.NibssUtils;
 import org.springframework.util.CollectionUtils;
 
@@ -17,6 +20,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import static com.example.nibsstransfer.constants.NibssConstants.*;
 
 /**
  * @author Peace Obute
@@ -80,6 +85,8 @@ public class TransferConvert {
         response.setGmtModified(model.getGmtModified());
         response.setTransactionFee(model.getTransactionFee());
         response.setStatus(model.getStatus());
+        response.setCommission(model.getCommission());
+        response.setTransactionIdFromBeneficiary(model.getTransactionIdFromBeneficiary());
 
         return response;
     }
@@ -100,7 +107,7 @@ public class TransferConvert {
         model.setGmtCreated(new Date());
         model.setGmtModified(new Date());
         model.setTransactionFee(null);
-        model.setStatus("FAIL: ACCOUNT NUMBER NOT FOUND");
+        model.setStatus(ACCOUNT_NOT_FOUND);
 
         return model;
     }
@@ -120,7 +127,7 @@ public class TransferConvert {
         model.setGmtModified(transaction.getGmtModified());
         model.setTransactionFee(null);
         model.setBilledAmount(null);
-        model.setStatus("INSUFFICIENT FUNDS");
+        model.setStatus(INSUFFICIENT_FUNDS);
 
         return model;
     }
@@ -141,6 +148,8 @@ public class TransferConvert {
         model.setTransactionFee(transaction.getTransactionFee());
         model.setBilledAmount(transaction.getBilledAmount());
         model.setStatus(transaction.getStatus());
+        model.setTransactionIdFromBeneficiary(transaction.getTransactionIdFromBeneficiary());
+        model.setCommission(transaction.getCommission());
 
         return model;
     }
@@ -164,9 +173,10 @@ public class TransferConvert {
         transactionToSave.setAmountToSend(requestDto.getAmount());
         transactionToSave.setIsCommissionWorthy(false);
         transactionToSave.setCommission(null);
-        transactionToSave.setStatus("PENDING");
+        transactionToSave.setStatus(PENDING);
         transactionToSave.setTransactionFee(null);
         transactionToSave.setBilledAmount(null);
+        transactionToSave.setTransactionIdFromBeneficiary(null);
 
         return transactionToSave;
     }
@@ -202,23 +212,23 @@ public class TransferConvert {
         transaction.setIsTransactionProcessed(true);
         transaction.setIsCommissionWorthy(true);
         transaction.setCommission(null);
-        transaction.setStatus(res.getStatus());
+        transaction.setStatus(res.getStatus().toUpperCase());
         transaction.setTransactionFee(transactionFee);
         transaction.setBilledAmount(billedAmount);
-        transaction.setBeneficiaryAccountName(transaction.getBeneficiaryAccountName());
-        transaction.setBeneficiaryAccountNumber(transaction.getBeneficiaryAccountNumber());
+        transaction.setBeneficiaryAccountName(res.getBeneficiary().getBeneficiaryAccountName());
+        transaction.setBeneficiaryAccountNumber(res.getBeneficiary().getBeneficiaryAccountNumber());
+        transaction.setTransactionIdFromBeneficiary(res.getTransactionId());
 
         return transaction;
     }
 
-    public static TransactionEntity upDateTxnWhenTransactionIsPending(TransactionEntity transaction,
-                                                                        BigDecimal billedAmount, BigDecimal transactionFee) {
-        transaction.setIsTransactionProcessed(true);
-        transaction.setIsCommissionWorthy(true);
+    public static TransactionEntity upDateTxnWhenTransactionIsPending(TransactionEntity transaction) {
+        transaction.setIsTransactionProcessed(false);
+        transaction.setIsCommissionWorthy(false);
         transaction.setCommission(null);
-        transaction.setStatus("PENDING");
-        transaction.setTransactionFee(transactionFee);
-        transaction.setBilledAmount(billedAmount);
+        transaction.setStatus(PENDING);
+        transaction.setTransactionFee(null);
+        transaction.setBilledAmount(null);
 
         return transaction;
     }
@@ -254,5 +264,26 @@ public class TransferConvert {
         return responseList;
     }
 
+    public static String beneficiaryClientRequestMapper(TransactionEntity transaction) {
 
+        TransferClientRequest req = new TransferClientRequest();
+        req.setTransactionId(transaction.getTransactionReference());
+        req.setAmount(transaction.getAmountToSend());
+        req.setBeneficiaryAccountName(transaction.getBeneficiaryAccountName());
+        req.setBeneficiaryAccountNumber(transaction.getBeneficiaryAccountNumber());
+        req.setSenderAccountName(transaction.getSenderAccountName());
+        req.setSenderAccountNumber(transaction.getSenderAccountNumber());
+
+        return JSON.toJSONString(req);
+    }
+
+    public static void buildTransactionClientResponse(TransactionEntity entity, TransferClientResponse res) {
+        res.setTransactionId(NibssUtils.generateRandomNumberString(10));
+        res.setAmount(entity.getAmountToSend());
+        res.setDate(new Date());
+        res.getSender().setSenderAccountName(entity.getSenderAccountName());
+        res.getSender().setSenderAccountNumber(entity.getSenderAccountNumber());
+        res.getBeneficiary().setBeneficiaryAccountName(entity.getBeneficiaryAccountName());
+        res.getBeneficiary().setBeneficiaryAccountNumber(entity.getBeneficiaryAccountNumber());
+    }
 }

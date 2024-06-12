@@ -61,7 +61,8 @@ public class TransferServiceImpl implements TransferService {
             log.warn("sender account details are not valid. This transaction cannot be processed {}", requestDto);
             return TransferConvert.convertToPaymentResponseModel(requestDto);
         }
-        //save every transaction that comes into the system once account has been validated
+        //save every transaction that comes into the system once account has been validated, generate a reference for the transaction and
+        //save status as PENDING
         transaction = transferRepository.save(TransferConvert.convertToEntity(requestDto, senderAccount));
 
         try {
@@ -74,29 +75,28 @@ public class TransferServiceImpl implements TransferService {
                 return TransferConvert.convertToPaymentResponseModel(transaction);
             }
 
+            //to calculate the transaction fee
             BigDecimal fee = TXN_FEE_PERCENTAGE.multiply(transaction.getAmountToSend());
             // Cap the fee at N100 if it is more than N100
             BigDecimal transactionFee = fee.min(FEE_CAP);
             BigDecimal billedAmount = transaction.getAmountToSend().add(transactionFee);
-
 
             //perform transfer client call to beneficiary bank account
             HttpResponse<String> clientResponse= client.sendTransactionToBeneficiaryBank(transaction);
 
             if(clientResponse.statusCode() == 200){
                 //build response object from client
-                TransferClientResponse clientRes = TransferClientResponse.build(clientResponse.body());
+                TransferClientResponse clientRes = TransferClientResponse.build(clientResponse.body(), transaction);
 
                 if(clientRes != null) {
-                    updateAccountDetails(billedAmount, senderAccount, clientRes, transaction);
+                    updateAccountDetails(billedAmount, senderAccount, clientRes);
                     //update transaction status in the database
                     transaction = transferRepository.save(TransferConvert.upDateTxnWhenTransactionIsProcessed(transaction,
                             billedAmount, transactionFee, clientRes));
                 }
             }
             if(clientResponse.statusCode() != 200) {
-                transaction = transferRepository.save(TransferConvert.upDateTxnWhenTransactionIsPending(transaction,
-                        billedAmount, transactionFee));
+                transaction = transferRepository.save(TransferConvert.upDateTxnWhenTransactionIsPending(transaction));
             }
             return TransferConvert.convertToAllPaymentResponseModel(transaction);
         }catch (DuplicateKeyException e){
@@ -158,21 +158,21 @@ public class TransferServiceImpl implements TransferService {
         }
     }
 
-    private void updateAccountDetails(BigDecimal billedAmount, AccountEntity senderAccount, TransferClientResponse res, TransactionEntity transaction) {
+    private void updateAccountDetails(BigDecimal billedAmount, AccountEntity senderAccount, TransferClientResponse res) {
 
+        //subtract billed amount from sender account balance
         senderAccount.setAccountBalance(senderAccount.getAccountBalance().subtract(billedAmount));
-        //get beneficiary details from the database and save the new balance
 
+        //create a beneficiary entity and store details
         AccountEntity beneficiaryAccount = new AccountEntity();
-        beneficiaryAccount.setAccountName(transaction.getBeneficiaryAccountName());
-        beneficiaryAccount.setAccountNumber(20000 + transaction.getBeneficiaryAccountNumber());
-        beneficiaryAccount.setAccountBalance(transaction.getAmountToSend());
-        beneficiaryAccount.setBankName("Bank");
-        beneficiaryAccount.setBvn("8678289737");
-        beneficiaryAccount.setBankCode("503");
-
-
-       // beneficiaryAccount.setAccountBalance(beneficiaryAccount.getAccountBalance().add(transaction.getAmountToSend()));
+        if(res.getBeneficiary() != null) {
+            beneficiaryAccount.setAccountName(res.getBeneficiary().getBeneficiaryAccountName());
+            beneficiaryAccount.setAccountNumber(res.getBeneficiary().getBeneficiaryAccountNumber());
+            beneficiaryAccount.setAccountBalance(res.getAmount().add(BigDecimal.valueOf(20000)));
+            beneficiaryAccount.setBankName("Bank");
+            beneficiaryAccount.setBvn("8678289737");
+            beneficiaryAccount.setBankCode("503");
+        }
 
         accountRepository.save(senderAccount);
         accountRepository.save(beneficiaryAccount);

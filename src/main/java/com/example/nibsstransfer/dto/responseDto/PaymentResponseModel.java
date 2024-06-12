@@ -16,6 +16,8 @@ public class PaymentResponseModel {
 
     private BigDecimal billedAmount;
 
+    private BigDecimal commission;
+
     private String senderAccountName;
 
     private String senderAccountNumber;
@@ -37,4 +39,6 @@ public class PaymentResponseModel {
     private Date gmtModified;
 
     private String status;
+
+    private String transactionIdFromBeneficiary;
 }

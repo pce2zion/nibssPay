@@ -20,6 +20,8 @@ public class PaymentResponse {
 
     private BigDecimal billedAmount;
 
+    private BigDecimal commission;
+
     private String senderAccountName;
 
     private String senderAccountNumber;
@@ -41,4 +43,6 @@ public class PaymentResponse {
     private Date gmtModified;
 
     private String status;
+
+    private String transactionIdFromBeneficiary;
 }

@@ -1,20 +1,24 @@
 package com.example.nibsstransfer.client.res;
 
 import com.alibaba.fastjson.JSONObject;
+import com.example.nibsstransfer.converter.TransferConvert;
+import com.example.nibsstransfer.entity.TransactionEntity;
+import com.example.nibsstransfer.util.NibssUtils;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 @Data
 @Slf4j
 public class TransferClientResponse {
 
-    private String id;
+    private String transactionId;
 
     private BigDecimal amount;
 
-    private String date;
+    private Date date;
 
     private SenderClientRes sender;
 
@@ -23,13 +27,16 @@ public class TransferClientResponse {
     private String status;
 
 
-    public static TransferClientResponse build(String responseStr) {
+    public static TransferClientResponse build(String responseStr, TransactionEntity entity) {
         try {
-            return JSONObject.parseObject(responseStr, TransferClientResponse.class);
+           TransferClientResponse res =  JSONObject.parseObject(responseStr, TransferClientResponse.class);
+            TransferConvert.buildTransactionClientResponse(entity, res);
         } catch (Exception e) {
-            log.error("pars from string exception response Str: {}",responseStr, e);
+            log.error("parse from string exception response Str: {}",responseStr, e);
         }
         return null;
     }
+
+
 
 }
