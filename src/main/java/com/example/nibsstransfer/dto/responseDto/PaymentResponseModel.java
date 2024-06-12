@@ -26,6 +26,8 @@ public class PaymentResponseModel {
 
     private String senderBankCode;
 
+    private String senderBank;
+
     private String beneficiaryAccountName;
 
     private String beneficiaryAccountNumber;
@@ -33,6 +35,8 @@ public class PaymentResponseModel {
     private String beneficiaryBvn;
 
     private String beneficiaryBankCode;
+
+    private String beneficiaryBank;
 
     private Date gmtCreated;
 

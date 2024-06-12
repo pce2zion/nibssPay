@@ -23,9 +23,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static com.example.nibsstransfer.constants.NibssConstants.FEE_CAP;
-import static com.example.nibsstransfer.constants.NibssConstants.TXN_FEE_PERCENTAGE;
+import static com.example.nibsstransfer.constants.NibssConstants.*;
 import static com.example.nibsstransfer.converter.TransferConvert.covertToTransactionsList;
+
+/**
+ * @author Peace Obute
+ * @since 06/06/2024
+ */
 
 @Service
 @Slf4j
@@ -96,7 +100,7 @@ public class TransferServiceImpl implements TransferService {
                 }
             }
             if(clientResponse.statusCode() != 200) {
-                transaction = transferRepository.save(TransferConvert.upDateTxnWhenTransactionIsPending(transaction));
+                transaction = transferRepository.save(TransferConvert.upDateTxnWhenTransactionIsFail(transaction));
             }
             return TransferConvert.convertToAllPaymentResponseModel(transaction);
         }catch (DuplicateKeyException e){
@@ -121,14 +125,15 @@ public class TransferServiceImpl implements TransferService {
             }
             //since parameters are optional, perform checks for them differently
             if (status != null && senderAccountNumber != null && startDate != null & endDate != null) {
-                transactionList = transferRepository.findByStatusAndSenderAccountNumberAndGmtCreatedBetween(status, senderAccountNumber, startDate, endDate);
+                transactionList = transferRepository.findByStatusAndSenderAccountNumberAndGmtCreatedBetween(status,
+                                                                             senderAccountNumber, startDate, endDate);
 
             }else if(status != null & senderAccountNumber != null){
-                transactionList = transferRepository.findByStatusAndSenderAccountNumber(senderAccountNumber, startDate, endDate);
+                transactionList = transferRepository.findByStatusAndSenderAccountNumber(status, senderAccountNumber);
             }else if (status != null) {
-                transactionList = transferRepository.findByStatus(status, startDate, endDate);
+                transactionList = transferRepository.findByStatus(status);
             }else if (senderAccountNumber != null) {
-                transactionList = transferRepository.findBySenderAccountNumber(senderAccountNumber, startDate, endDate);
+                transactionList = transferRepository.findBySenderAccountNumber(senderAccountNumber);
             }else if(startDate != null && endDate != null){
                 transactionList = transferRepository.findByGmtCreatedBetween(startDate, endDate);
             }
@@ -146,22 +151,26 @@ public class TransferServiceImpl implements TransferService {
     @Override
     public List<PaymentResponseModel> getDailySummary(Date date) {
 
-        Date startDate = NibssUtils.getStartOfDay(date);
-        Date  endDate = NibssUtils.getEndOfDay(date);
+        if(date != null) {
+            Date startDate = NibssUtils.getStartOfDay(date);
+            Date endDate = NibssUtils.getEndOfDay(date);
 
-        List<PaymentResponseModel> responseModelList = new ArrayList<>();
-        List<TransactionEntity> dailyTransactions = new ArrayList<>();
+            List<PaymentResponseModel> responseModelList = new ArrayList<>();
+            List<TransactionEntity> dailyTransactions = new ArrayList<>();
 
-        try {
-            dailyTransactions = transferRepository.findByGmtCreatedBetween(startDate, endDate);
-            if (CollectionUtils.isEmpty(dailyTransactions)) {
-                return responseModelList;
+            try {
+                dailyTransactions = transferRepository.findByGmtCreatedBetween(startDate, endDate);
+                if (CollectionUtils.isEmpty(dailyTransactions)) {
+                    return responseModelList;
+                }
+                return covertToTransactionsList(responseModelList, dailyTransactions);
+            } catch (Exception e) {
+                log.error("Exception occurred while trying to fetch transactions with parameters {}", date);
+                return covertToTransactionsList(responseModelList, dailyTransactions);
             }
-            return covertToTransactionsList(responseModelList, dailyTransactions);
-        }catch (Exception e){
-            log.error("Exception occurred while trying to fetch transactions with parameters {}", date);
-            return covertToTransactionsList(responseModelList, dailyTransactions);
         }
+        log.error("no date inputted");
+        return null;
     }
 
     private void updateAccountDetails(BigDecimal billedAmount, AccountEntity senderAccount, TransferClientResponse res) {
@@ -175,9 +184,9 @@ public class TransferServiceImpl implements TransferService {
             beneficiaryAccount.setAccountName(res.getBeneficiary().getBeneficiaryAccountName());
             beneficiaryAccount.setAccountNumber(res.getBeneficiary().getBeneficiaryAccountNumber());
             beneficiaryAccount.setAccountBalance(res.getAmount().add(BigDecimal.valueOf(20000)));
-            beneficiaryAccount.setBankName("Bank");
-            beneficiaryAccount.setBvn("8678289737");
-            beneficiaryAccount.setBankCode("503");
+            beneficiaryAccount.setBankName(res.getBeneficiary().getBeneficiaryBankName());
+            beneficiaryAccount.setBvn(res.getBeneficiary().getBeneficiaryBvn());
+            beneficiaryAccount.setBankCode(res.getBeneficiary().getBeneficiaryBankCode());
         }
 
         accountRepository.save(senderAccount);

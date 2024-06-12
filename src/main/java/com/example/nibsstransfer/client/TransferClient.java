@@ -1,8 +1,10 @@
 package com.example.nibsstransfer.client;
+
 import com.example.nibsstransfer.converter.TransferConvert;
 import com.example.nibsstransfer.entity.TransactionEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -11,8 +13,12 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 
-import static com.example.nibsstransfer.constants.NibssConstants.DEMO_MOCK_URL;
+import static com.example.nibsstransfer.constants.NibssConstants.*;
 
+/**
+ * @author Peace Obute
+ * @since 06/06/2024
+ */
 @Slf4j
 @Service
 public class TransferClient {
@@ -28,9 +34,9 @@ public class TransferClient {
         try {
             // Create an HttpRequest
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(new URI(DEMO_MOCK_URL))
+                    .uri(new URI(DEMO_POSTMAN_MOCK_SERVER_URL))
                     .timeout(Duration.ofMinutes(1))
-                    .header("Content-Type", "application/json")
+                    .header(CONTENT_TYPE, APPLICATION_JSON)
                     .POST(HttpRequest.BodyPublishers.ofString(clientReq))
                     .build();
 

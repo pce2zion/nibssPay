@@ -36,9 +36,17 @@ public class TransactionEntity {
 
     private String SenderBankCode;
 
+    private String senderBank;
+
     private String beneficiaryAccountName;
 
     private String beneficiaryAccountNumber;
+
+    private String beneficiaryBvn;
+
+    private String beneficiaryBankCode;
+
+    private String beneficiaryBank;
 
     private String transactionIdFromBeneficiary;
 

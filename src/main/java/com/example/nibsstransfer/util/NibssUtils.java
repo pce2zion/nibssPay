@@ -4,6 +4,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
 
+/**
+ * @author Peace Obute
+ * @since 09/06/2024
+ */
 public class NibssUtils {
 
     private static final Random RANDOM = new Random();

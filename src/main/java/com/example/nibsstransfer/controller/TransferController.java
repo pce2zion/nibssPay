@@ -46,12 +46,10 @@ public class TransferController {
                                                              @RequestParam(required = false)  @DateTimeFormat(pattern = "yyyy-MM-dd")Date endDate){
         List<PaymentResponseModel> responseModelList = transferService.getAllTransactions(status, senderAccountNumber, startDate, endDate);
         return ResponseEntity.status(HttpStatus.OK).body(TransferConvert.convertToResponse(responseModelList));
-//accoutnt id is supposed tobe senderAccountnumber
     }
 
     @GetMapping("/dailySummary")
-    ResponseEntity<List<PaymentResponse>> getDailSummary( @RequestParam(required = false)
-                                                          @DateTimeFormat(pattern = "yyyy-MM-dd") Date date){
+    ResponseEntity<List<PaymentResponse>> getDailSummary(@RequestParam() @DateTimeFormat(pattern = "yyyy-MM-dd") Date date){
         List<PaymentResponseModel> responseModelList = transferService.getDailySummary(date);
         return ResponseEntity.status(HttpStatus.OK).body(TransferConvert.convertToResponse(responseModelList));
     }

@@ -36,6 +36,8 @@ public class PaymentResponse {
 
     private String beneficiaryBvn;
 
+    private String beneficiaryBank;
+
     private String beneficiaryBankCode;
 
     private Date gmtCreated;

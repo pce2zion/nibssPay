@@ -2,8 +2,9 @@ package com.example.nibsstransfer.converter;
 
 import com.alibaba.fastjson.JSON;
 import com.example.nibsstransfer.client.req.TransferClientRequest;
+import com.example.nibsstransfer.client.res.BeneficiaryClientRes;
+import com.example.nibsstransfer.client.res.SenderClientRes;
 import com.example.nibsstransfer.client.res.TransferClientResponse;
-import com.example.nibsstransfer.constants.NibssConstants;
 import com.example.nibsstransfer.dto.request.PaymentRequest;
 import com.example.nibsstransfer.dto.requestDto.BeneficiaryRequestDto;
 import com.example.nibsstransfer.dto.requestDto.OtherDetailsDto;
@@ -81,6 +82,7 @@ public class TransferConvert {
         response.setBeneficiaryAccountName(model.getBeneficiaryAccountName());
         response.setBeneficiaryBvn(model.getBeneficiaryBvn());
         response.setBeneficiaryBankCode(model.getBeneficiaryBankCode());
+        response.setBeneficiaryBank(model.getBeneficiaryBank());
         response.setGmtCreated(model.getGmtCreated());
         response.setGmtModified(model.getGmtModified());
         response.setTransactionFee(model.getTransactionFee());
@@ -121,6 +123,7 @@ public class TransferConvert {
         model.setSenderAccountName(transaction.getSenderAccountName());
         model.setSenderBvn(transaction.getSenderBvn());
         model.setSenderBankCode(transaction.getSenderBankCode());
+        model.setSenderBank(transaction.getSenderBank());
         model.setBeneficiaryAccountNumber(transaction.getBeneficiaryAccountNumber());
         model.setBeneficiaryAccountName(transaction.getBeneficiaryAccountName());
         model.setGmtCreated(transaction.getGmtCreated());
@@ -143,8 +146,12 @@ public class TransferConvert {
         model.setSenderAccountName(transaction.getSenderAccountName());
         model.setSenderBvn(transaction.getSenderBvn());
         model.setSenderBankCode(transaction.getSenderBankCode());
+        model.setSenderBank(transaction.getSenderBank());
         model.setBeneficiaryAccountNumber(transaction.getBeneficiaryAccountNumber());
         model.setBeneficiaryAccountName(transaction.getBeneficiaryAccountName());
+        model.setBeneficiaryBank(transaction.getBeneficiaryBank());
+        model.setBeneficiaryBankCode(transaction.getBeneficiaryBankCode());
+        model.setBeneficiaryBvn(transaction.getBeneficiaryBvn());
         model.setGmtCreated(transaction.getGmtCreated());
         model.setGmtModified(transaction.getGmtModified());
         model.setTransactionFee(transaction.getTransactionFee());
@@ -165,6 +172,7 @@ public class TransferConvert {
         transactionToSave.setSenderAccountName(senderAccount.getAccountName());
         transactionToSave.setSenderBvn(senderAccount.getBvn());
         transactionToSave.setSenderBankCode(senderAccount.getBankCode());
+        transactionToSave.setSenderBank(senderAccount.getBankName());
         transactionToSave.setBeneficiaryAccountName(requestDto.getBeneficiary().getBeneficiaryAccountName());
         transactionToSave.setBeneficiaryAccountNumber(requestDto.getBeneficiary().getBeneficiaryAccountNumber());
         transactionToSave.setGmtCreated(new Date());
@@ -197,8 +205,12 @@ public class TransferConvert {
             model.setSenderAccountName(transaction.getSenderAccountName());
             model.setSenderBvn(transaction.getSenderBvn());
             model.setSenderBankCode(transaction.getSenderBankCode());
+            model.setSenderBank(transaction.getSenderBank());
             model.setBeneficiaryAccountNumber(transaction.getBeneficiaryAccountNumber());
             model.setBeneficiaryAccountName(transaction.getBeneficiaryAccountName());
+            model.setBeneficiaryBank(transaction.getBeneficiaryBank());
+            model.setBeneficiaryBankCode(transaction.getBeneficiaryBankCode());
+            model.setBeneficiaryBvn(transaction.getBeneficiaryBvn());
             model.setGmtCreated(transaction.getGmtCreated());
             model.setGmtModified(transaction.getGmtModified());
             model.setTransactionFee(transaction.getTransactionFee());
@@ -214,7 +226,7 @@ public class TransferConvert {
     public static TransactionEntity upDateTxnWhenTransactionIsProcessed(TransactionEntity transaction, BigDecimal billedAmount,
                                                                         BigDecimal transactionFee, TransferClientResponse res) {
         transaction.setIsTransactionProcessed(true);
-        transaction.setIsCommissionWorthy(true);
+        transaction.setIsCommissionWorthy(false);
         transaction.setCommission(null);
         transaction.setStatus(res.getStatus().toUpperCase());
         transaction.setTransactionFee(transactionFee);
@@ -222,15 +234,18 @@ public class TransferConvert {
         transaction.setBeneficiaryAccountName(res.getBeneficiary().getBeneficiaryAccountName());
         transaction.setBeneficiaryAccountNumber(res.getBeneficiary().getBeneficiaryAccountNumber());
         transaction.setTransactionIdFromBeneficiary(res.getTransactionId());
+        transaction.setBeneficiaryBvn(res.getBeneficiary().getBeneficiaryBvn());
+        transaction.setBeneficiaryBankCode(res.getBeneficiary().getBeneficiaryBankCode());
+        transaction.setBeneficiaryBank(res.getBeneficiary().getBeneficiaryBankName());
 
         return transaction;
     }
 
-    public static TransactionEntity upDateTxnWhenTransactionIsPending(TransactionEntity transaction) {
+    public static TransactionEntity upDateTxnWhenTransactionIsFail(TransactionEntity transaction) {
         transaction.setIsTransactionProcessed(false);
         transaction.setIsCommissionWorthy(false);
         transaction.setCommission(null);
-        transaction.setStatus(PENDING);
+        transaction.setStatus(FAILED);
         transaction.setTransactionFee(null);
         transaction.setBilledAmount(null);
 
@@ -257,6 +272,7 @@ public class TransferConvert {
             response.setBeneficiaryAccountName(model.getBeneficiaryAccountName());
             response.setBeneficiaryBvn(model.getBeneficiaryBvn());
             response.setBeneficiaryBankCode(model.getBeneficiaryBankCode());
+            response.setBeneficiaryBank(model.getBeneficiaryBank());
             response.setGmtCreated(model.getGmtCreated());
             response.setGmtModified(model.getGmtModified());
             response.setTransactionFee(model.getTransactionFee());
@@ -287,11 +303,25 @@ public class TransferConvert {
         res.setTransactionId(NibssUtils.generateRandomNumberString(10));
         res.setAmount(entity.getAmountToSend());
         res.setDate(new Date());
-        res.getSender().setSenderAccountName(entity.getSenderAccountName());
-        res.getSender().setSenderAccountNumber(entity.getSenderAccountNumber());
-        res.getBeneficiary().setBeneficiaryAccountName(entity.getBeneficiaryAccountName());
-        res.getBeneficiary().setBeneficiaryAccountNumber(entity.getBeneficiaryAccountNumber());
 
+        if(res.getSender() == null) {
+            SenderClientRes senderRes = new SenderClientRes();
+            senderRes.setSenderAccountName(entity.getSenderAccountName());
+            senderRes.setSenderAccountNumber(entity.getSenderAccountNumber());
+
+            res.setSender(senderRes);
+        }
+        if(res.getBeneficiary() == null) {
+            BeneficiaryClientRes beneficiaryRes = new BeneficiaryClientRes();
+            beneficiaryRes.setBeneficiaryAccountName(entity.getBeneficiaryAccountName());
+            beneficiaryRes.setBeneficiaryAccountNumber(entity.getBeneficiaryAccountNumber());
+            beneficiaryRes.setBeneficiaryBankName(BENEFICIARY_BANK);
+            beneficiaryRes.setBeneficiaryBankCode(BENEFICIARY_BANK_CODE);
+            beneficiaryRes.setBeneficiaryBvn(BENEFICIARY_BVN);
+
+
+            res.setBeneficiary(beneficiaryRes);
+        }
         return res;
     }
 }
