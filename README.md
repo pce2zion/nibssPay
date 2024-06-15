@@ -2,6 +2,13 @@ Nibss Pay.
 NibssPay is a simulation of the Nibbs interface. This simulation demonstrates how transactions are received, processed and sent to the beneficiary Bank. For the purpose of this simulation, 
 transactions received into nibss system are assumed to be automatically decrypted.
 
+this project was built on java 11 and spring boot 3.3. I used an SQL database for persistence. Sql databases
+are mostly encouraged for transactions because of their ACID properties
+Database used - MySQL
+Persistence framework used - Spring data JPA
+
+Details of database connectivity are shown in the application.properties file
+
 //doTransfer (POST)
 The doTransfer endpoint accepts payment from the sender institution via the controller, and processes it, it first checks if the sender details are valid. This is a simulation of an api call to validate
 the sender account. I mocked account details into an account database and called it from there. 
@@ -21,7 +28,7 @@ Account balance : N250000.00
 
 you can also test for invalid account numbers
 
-Once the sender account details aprovided are valid, the transaction is saved into the database to be processed with a status of PENDING. If the balance is less than the amount to send, 
+Once the sender account details are provided are valid, the transaction is saved into the database to be processed with a status of PENDING. If the balance is less than the amount to send, 
 the transaction fails and INSUFFICIENT FUNDS is returned as the status, else, the transaction fee is calculated, the transaction is encrypted using RSA encryption and send to the beneficiary institution. Here, i built a mock server to accept all transaction requests. This returns a response if successful.
 
 If a successful response is received, it means that the beneficiary received the transaction. Then the transaction fee is removed from the sender account alongside the amount. the status

@@ -85,7 +85,8 @@ public class TransferServiceImpl implements TransferService {
             BigDecimal transactionFee = fee.min(FEE_CAP);
             BigDecimal billedAmount = transaction.getAmountToSend().add(transactionFee);
 
-            //perform transfer client call to beneficiary bank account
+            //perform transfer client call to beneficiary bank account. NB sender can only be debited when beneficiary has received
+            //funds.
             HttpResponse<String> clientResponse= client.sendTransactionToBeneficiaryBank(transaction);
 
             if(clientResponse.statusCode() == 200){
@@ -94,11 +95,12 @@ public class TransferServiceImpl implements TransferService {
 
                 if(clientRes != null) {
                     updateAccountDetails(billedAmount, senderAccount, clientRes);
-                    //update transaction status in the database
+                    //update transaction status in the database and only debit sender when transaction is successful
                     transaction = transferRepository.save(TransferConvert.upDateTxnWhenTransactionIsProcessed(transaction,
                             billedAmount, transactionFee, clientRes));
                 }
             }
+            //if transaction to beneficiary account was not successful, sender cannot be debited
             if(clientResponse.statusCode() != 200) {
                 transaction = transferRepository.save(TransferConvert.upDateTxnWhenTransactionIsFail(transaction));
             }
@@ -111,6 +113,9 @@ public class TransferServiceImpl implements TransferService {
         }
     }
 
+    /*
+    this implementation is to get a list of transactions in the database by some optional parameters
+     */
     @Override
     public List<PaymentResponseModel> getAllTransactions(String status, String senderAccountNumber, Date startDate,
                                                                                             Date endDate) {
@@ -147,6 +152,10 @@ public class TransferServiceImpl implements TransferService {
             return covertToTransactionsList(responseModelList, transactionList);
         }
     }
+
+    /*
+    this impl is to get the daily summary of all transactions in a day
+     */
 
     @Override
     public List<PaymentResponseModel> getDailySummary(Date date) {
