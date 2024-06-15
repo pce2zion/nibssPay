@@ -72,6 +72,7 @@ public class TransferServiceImpl implements TransferService {
         try {
             transaction = transferRepository.findAccountByTransactionReference(transaction.getTransactionReference());
 
+            //check if sender account has sufficient funds
             if (senderAccount.getAccountBalance().compareTo(transaction.getAmountToSend()) <= 0) {
 
                 log.warn("Insufficient funds. Transaction failed for transaction {} with reference number {}",
