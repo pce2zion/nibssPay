@@ -45,7 +45,11 @@ public class TransferServiceImpl implements TransferService {
         this.transferRepository = transferRepository;
         this.client = client;
     }
-
+    /**
+     *this impl is to receive and process trasactions
+     * @param requestDto requestDto
+     * @return PaymentResponseModel
+     **/
     @Override
     public PaymentResponseModel receiveAndProcess(PaymentRequestDto requestDto) {
 
@@ -114,9 +118,12 @@ public class TransferServiceImpl implements TransferService {
         }
     }
 
-    /*
-    this implementation is to get a list of transactions in the database by some optional parameters
-     */
+
+    /**
+     *this implementation is to get a list of transactions in the database by some optional parameters
+     * @param status, senderAccountNumber, startDate, endDate
+     * @return List<PaymentResponseModel>
+     **/
     @Override
     public List<PaymentResponseModel> getAllTransactions(String status, String senderAccountNumber, Date startDate,
                                                                                             Date endDate) {
@@ -154,10 +161,12 @@ public class TransferServiceImpl implements TransferService {
         }
     }
 
-    /*
-    this impl is to get the daily summary of all transactions in a day
-     */
 
+    /**
+     *this impl is to get the daily summary of all transactions in a day
+     * @param date date
+     * @return List<PaymentResponseModel>
+     **/
     @Override
     public List<PaymentResponseModel> getDailySummary(Date date) {
 
@@ -183,6 +192,12 @@ public class TransferServiceImpl implements TransferService {
         return null;
     }
 
+    /**
+     * update sender account by  debiting amount and crediting beneficiary
+     * @param billedAmount billedAmount
+     * @param senderAccount senderAccount
+     * @param res res
+     */
     private void updateAccountDetails(BigDecimal billedAmount, AccountEntity senderAccount, TransferClientResponse res) {
 
         //subtract billed amount from sender account balance

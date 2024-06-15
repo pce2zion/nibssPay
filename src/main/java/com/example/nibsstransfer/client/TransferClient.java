@@ -22,9 +22,13 @@ import static com.example.nibsstransfer.constants.NibssConstants.*;
 @Slf4j
 @Service
 public class TransferClient {
-    /*
-      This is a demo mock api call to send the amount to the beneficiary bank.
-    */
+
+    /**
+     * This is a demo mock api call to send the amount to the beneficiary bank.
+     *
+     * @param transaction transaction
+     * @return String
+     */
     public HttpResponse<String> sendTransactionToBeneficiaryBank(TransactionEntity transaction) throws URISyntaxException {
 
         String clientReq = TransferConvert.beneficiaryClientRequestMapper(transaction);

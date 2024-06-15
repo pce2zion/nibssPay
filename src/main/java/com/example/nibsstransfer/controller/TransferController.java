@@ -31,6 +31,11 @@ public class TransferController {
         this.transferService = transferService;
     }
 
+    /**
+       *receive, process and send trasaction
+     * @param request request
+     * @return PaymentResponse
+     **/
     @PostMapping("/doTransfer")
     ResponseEntity<PaymentResponse> receiveAndProcessTransaction(@Valid @RequestBody PaymentRequest request) {
         PaymentRequestDto paymentRequestDto = TransferConvert.convert(request);
@@ -39,6 +44,11 @@ public class TransferController {
 
     }
 
+    /**
+     *get transactions with optional parameters
+     * @param status, senderAccountNumber, startDate, endDate
+     * @return List<PaymentResponse>
+     **/
     @GetMapping("/getTranscations")
     ResponseEntity<List<PaymentResponse>> getAllTransactions(@RequestParam(required = false) String status,
                                                              @RequestParam(required = false) String senderAccountNumber,
@@ -48,6 +58,11 @@ public class TransferController {
         return ResponseEntity.status(HttpStatus.OK).body(TransferConvert.convertToResponse(responseModelList));
     }
 
+    /**
+     *get daily transaction summary
+     * @param date date
+     * @return List<PaymentResponse>
+     **/
     @GetMapping("/dailySummary")
     ResponseEntity<List<PaymentResponse>> getDailSummary(@RequestParam() @DateTimeFormat(pattern = "yyyy-MM-dd") Date date){
         List<PaymentResponseModel> responseModelList = transferService.getDailySummary(date);

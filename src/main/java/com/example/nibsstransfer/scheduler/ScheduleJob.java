@@ -30,6 +30,9 @@ public class ScheduleJob {
         this.transferRepository = transferRepository;
     }
 
+    /**
+     * cronjob that runs daily at 12:00 am to process txn commissions and subtract from transaction fee
+     */
     @Scheduled(cron = "0 0 0 * * ?") //runs daily at 12:00 AM
     public void processCommissions(){
         List<TransactionEntity> transactionsList = transferRepository.findByStatus(NibssConstants.SUCCESS);
@@ -46,6 +49,9 @@ public class ScheduleJob {
         }
     }
 
+    /**
+     * cronjob that runs daily at 12:00 am to process daily transaction fee
+     */
     @Scheduled(cron = "0 0 0 * * ?") //runs daily at 12:00 AM
     public void getDailySummary(){
         Date today = NibssUtils.getStartOfDay(new Date());
